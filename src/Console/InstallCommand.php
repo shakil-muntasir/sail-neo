@@ -1,6 +1,6 @@
 <?php
 
-namespace Laravel\Sail\Console;
+namespace Ronvolt\SailNeo\Console;
 
 use Illuminate\Console\Command;
 
@@ -11,7 +11,8 @@ class InstallCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'sail:install {--with= : The services that should be included in the installation}';
+    protected $signature = 'sail:install {--php= : Set PHP version to 7.4/8.0 | Default/Fallback - 8.0} {--with= : The services that should be included in the installation} \
+    {--mysql= : Set MySQL version to 5.7/8.0 if added as service | Ignored if service is not added, default/fallback - 8.0}';
 
     /**
      * The console command description.
@@ -27,6 +28,19 @@ class InstallCommand extends Command
      */
     public function handle()
     {
+        if ($this->option('php')) {
+            if ($this->option('php') == "8.0") {
+                $php_version = "8.0";
+            } elseif ($this->option('php') == "7.4") {
+                $php_version = "7.4";
+            } else {
+                $this->error('Unsupported version provided! Defaulting to PHP version 8.0');
+                $php_version = "8.0";
+            }
+        } else {
+            $php_version = "8.0";
+        }
+
         if ($this->option('with')) {
             $services = $this->option('with') == 'none' ? [] : explode(',', $this->option('with'));
         } elseif ($this->option('no-interaction')) {
@@ -35,7 +49,23 @@ class InstallCommand extends Command
             $services = $this->gatherServicesWithSymfonyMenu();
         }
 
-        $this->buildDockerCompose($services);
+        $mysql_version = "8.0";
+        if (in_array("mysql", $services)) {
+            if ($this->option('mysql')) {
+                if ($this->option('mysql') == "8.0") {
+                    $mysql_version = "8.0";
+                } elseif ($this->option('mysql') == "5.7") {
+                    $mysql_version = "5.7";
+                } else {
+                    $this->error('Unsupported version provided! Defaulting to MySQL version 8.0');
+                    $mysql_version = "8.0";
+                }
+            } else {
+                $mysql_version = "8.0";
+            }
+        }
+
+        $this->buildDockerCompose($php_version, $mysql_version, $services);
         $this->replaceEnvVariables($services);
 
         $this->info('Sail scaffolding installed successfully.');
@@ -66,7 +96,7 @@ class InstallCommand extends Command
      * @param  array  $services
      * @return void
      */
-    protected function buildDockerCompose(array $services)
+    protected function buildDockerCompose($php_version, $mysql_version, array $services)
     {
         $depends = collect($services)
             ->filter(function ($service) {
@@ -81,6 +111,8 @@ class InstallCommand extends Command
             return file_get_contents(__DIR__ . "/../../stubs/{$service}.stub");
         })->implode(''));
 
+        $stubs = str_replace('{{mysql_version}}', $mysql_version, $stubs);
+
         $volumes = collect($services)
             ->filter(function ($service) {
                 return in_array($service, ['mysql', 'pgsql', 'mariadb', 'redis', 'meilisearch']);
@@ -92,6 +124,7 @@ class InstallCommand extends Command
 
         $dockerCompose = file_get_contents(__DIR__ . '/../../stubs/docker-compose.stub');
 
+        $dockerCompose = str_replace('{{php_version}}', $php_version, $dockerCompose);
         $dockerCompose = str_replace('{{depends}}', empty($depends) ? '' : '        '.$depends, $dockerCompose);
         $dockerCompose = str_replace('{{services}}', $stubs, $dockerCompose);
         $dockerCompose = str_replace('{{volumes}}', $volumes, $dockerCompose);

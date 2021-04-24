@@ -1,30 +1,30 @@
 {
-    "name": "laravel/sail",
+    "name": "ronvolt/laravel-sail-neo",
     "description": "Docker files for running a basic Laravel application.",
     "keywords": ["laravel", "docker"],
     "license": "MIT",
     "support": {
-        "issues": "https://github.com/laravel/sail/issues",
-        "source": "https://github.com/laravel/sail"
+        "issues": "https://github.com/shakil-muntasir/sail-neo/issues",
+        "source": "https://github.com/shakil-muntasir/sail-neo"
     },
     "authors": [
         {
-            "name": "Taylor Otwell",
-            "email": "taylor@laravel.com"
+            "name": "Muntasir Rahman",
+            "email": "muntasir@ronvolt.com"
         }
     ],
     "require": {
-        "php": "^7.3|^8.0",
-        "illuminate/contracts": "^8.0|^9.0",
-        "illuminate/console": "^8.0|^9.0",
-        "illuminate/support": "^8.0|^9.0"
+        "php": "^7.4|^8.0",
+        "illuminate/contracts": "^7.0|^8.0|^9.0",
+        "illuminate/console": "^7.0|^8.0|^9.0",
+        "illuminate/support": "^7.0|^8.0|^9.0"
     },
     "bin": [
         "bin/sail"
     ],
     "autoload": {
         "psr-4": {
-            "Laravel\\Sail\\": "src/"
+            "Ronvolt\\SailNeo\\": "src/"
         }
     },
     "extra": {
@@ -33,7 +33,7 @@
         },
         "laravel": {
             "providers": [
-                "Laravel\\Sail\\SailServiceProvider"
+                "Ronvolt\\SailNeo\\SailServiceProvider"
             ]
         }
     },

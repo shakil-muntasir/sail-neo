@@ -1,11 +1,11 @@
 <?php
 
-namespace Laravel\Sail;
+namespace Ronvolt\SailNeo;
 
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
-use Laravel\Sail\Console\InstallCommand;
-use Laravel\Sail\Console\PublishCommand;
+use Ronvolt\SailNeo\Console\InstallCommand;
+use Ronvolt\SailNeo\Console\PublishCommand;
 
 class SailServiceProvider extends ServiceProvider implements DeferrableProvider
 {
